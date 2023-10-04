@@ -22,3 +22,24 @@ CALL Covid.consulta(0, 'M', 'Ciudad de México'); -- Ejemplo: Filtrar por sexo m
 
 CALL Covid.consulta(0, 'M', 'Todas'); -- Ejemplo: Filtrar por edad (adolescentes) y todos los sexos
 ```
+## api
+
+La api cuenta con 2 metos `http://localhost:5000/consulta` `GET` y `POST`. Donde en el get solo ingresas la url y te trae un listado de todos los caso, en el `POST` le mandamos los datos `edad`, `sexo`, `entida` nos traera los casos filtrados
+
+`GET`
+```sh
+http://localhost:5000/consulta
+
+```
+`POST`
+```sh
+http://localhost:5000/consulta
+
+
+{
+    "edad": 0,
+    "sexo": "T",
+    "entidad": "Todas"
+}
+
+```
