@@ -1,4 +1,6 @@
 import pandas as pd
+import logging
+
 
 from provedores.conexion import Conexion
 
@@ -34,11 +36,11 @@ def crear_tablas():
         );"""
     
 
-    try:
-        conexion =Conexion()
-        conn = conexion.conectar()
+    conexion =Conexion()
+    conn = conexion.conectar()
+    cursor = conn.cursor()
 
-        cursor = conn.cursor()
+    try:
 
         cursor.execute(entidad_res)
         cursor.execute(tipo_pasiente)
@@ -58,17 +60,68 @@ def crear_tablas():
     cursor.close()
     conn.close()
 
-def llenar_tablas():
+def crear_procedures():
+    consuta_procedure="""
+        CREATE PROCEDURE Covid.consulta(
+            in edad_parametro int,
+            in sexo_parametro char(1),
+            in entidad_parametro varchar(255)
+        )
+        BEGIN
+            SELECT 
+                p.ID_REGISTRO, 
+                er.NOMBRE_ENTIDAD, 
+                p.SEXO, 
+                p.EDAD, 
+                tp.TIPO, 
+                p.INTUBADO, 
+                p.OTRO_CASO, 
+                r.RESULTADO  
+            from Pacientes p 
+            inner join Entidades_Residencia er on er.ID_ENTIDAD = p.ID_ENTIDAD 
+            inner JOIN Tipo_Paciente tp on tp.ID_TIPO_PACIENTE  = p.ID_TIPO_PACIENTE 
+            inner join Resultados  r on r.ID_RESULTADO = p.ID_REGISTRO
+            WHERE 
+                (
+                    (edad_parametro = -1 AND p.EDAD < 12)
+                    or (edad_parametro = -2 AND p.EDAD BETWEEN 12 AND 18)
+                    or (edad_parametro = -3 AND p.EDAD BETWEEN 19 AND 25)
+                    or (edad_parametro = -4 AND p.EDAD > 60)
+                    or (edad_parametro = 0 AND  p.EDAD> 0)
+                )
+                AND (sexo_parametro = 'T' or p.SEXO=sexo_parametro)
+                AND (entidad_parametro = 'Todas' or entidad_parametro = er.NOMBRE_ENTIDAD); 
+        END
+        """    
+
+
+    
     conexion =Conexion()
     conn = conexion.conectar()
-
     cursor = conn.cursor()
 
     try:
 
-       
+        cursor.execute(consuta_procedure)
+        # Asegúrate de confirmar los cambios en la base de datos
+        conn.commit()
 
 
+    except Exception as err:
+        print(f"Error al crear las tablas datos: {err}")
+
+
+
+    # Cierra el cursor y la conexión
+    cursor.close()
+    conn.close()
+
+def llenar_tablas():
+    conexion =Conexion()
+    conn = conexion.conectar()
+    cursor = conn.cursor()
+
+    try:
         # Especifica la ruta al archivo Excel
         archivo_excel = './50000_Set_de_datos.xlsx'
 
@@ -166,8 +219,6 @@ def llenar_tablas():
         cursor.execute(insert_paciente)
         conn.commit()
 
-
-        
     except Exception as e:
         # Manejo de excepciones
         print(f"error al traer los archivos de exel: {str(e)}")
@@ -176,31 +227,53 @@ def llenar_tablas():
     cursor.close()
     conn.close()
     
-
-
 def validarTablas()->bool:
     # Crea un cursor para ejecutar consultas SQL
     conexion =Conexion()
     conn = conexion.conectar()
-
     cursor = conn.cursor()
+    
+    try:
+        # Nombre de la tabla que deseas verificar
+        nombre_tabla = 'Pacientes'
 
-    # Nombre de la tabla que deseas verificar
-    nombre_tabla = 'Pacientes'
+        # Consulta SQL para verificar si la tabla existe
+        consulta = f"SHOW TABLES LIKE '{nombre_tabla}'"
 
-    # Consulta SQL para verificar si la tabla existe
-    consulta = f"SHOW TABLES LIKE '{nombre_tabla}'"
+        # Ejecuta la consulta
+        cursor.execute(consulta)
 
-    # Ejecuta la consulta
-    cursor.execute(consulta)
+        # Obtiene el resultado de la consulta
+        resultado = cursor.fetchone()
 
-    # Obtiene el resultado de la consulta
-    resultado = cursor.fetchone()
-
+        # Verifica si la tabla existe
+        return resultado
+    except Exception as identifier:
+        print(f"Error al validar las tablas: {identifier}")
 
     # Cierra el cursor y la conexión
     cursor.close()
     conn.close()
+    
 
-    # Verifica si la tabla existe
-    return resultado
+""" if __name__ == '__main__':
+    # Configura la configuración de registro
+    logging.basicConfig(filename='app.log', level=logging.WARNING)
+
+    try:
+        logging.info(">>> Creadond la Base de datos <<<")
+        val =validarTablas();
+        if val :
+            pass
+        else:
+            crear_tablas()
+            llenar_tablas()
+            crear_procedures()
+        logging.info(">>> Se termino termino de crear la Base de Datos <<<")
+    except Exception as identifier:
+        logging.warning(f"Error al migrar los datod {identifier}")
+ """
+
+
+
+
