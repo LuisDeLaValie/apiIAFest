@@ -1,5 +1,5 @@
 # Uso
-ejecutar el comando ´docker-compose up -d´
+ejecutar el comando `docker-compose up -d`
 para corre el proyecto    
 
 esto levantara el servidor de MySQL, ejecutando el scrip en donde pasa el exel al la Base de Datos covi 
