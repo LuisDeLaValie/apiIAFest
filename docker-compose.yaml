@@ -1,0 +1,29 @@
+
+version: '3.7'
+
+services:
+
+  mysql:
+    image: mysql:8.0.32
+    environment:
+      MYSQL_ROOT_PASSWORD: <ROOT_PASSWORD>
+      MYSQL_DATABASE: Covid
+      MYSQL_USER: IaFest
+      MYSQL_PASSWORD: I123Af
+    ports:
+      - 3306:3306
+
+  myapp:
+    build: .
+    container_name: app
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=IaFest
+      - MYSQL_PASSWORD=I123Af
+      - MYSQL_DATABASE=Covid
+    volumes:
+      - .:/app
+    ports:
+      - 80:80
+    depends_on:
+      - mysql
