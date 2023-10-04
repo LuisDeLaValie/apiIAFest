@@ -4,6 +4,8 @@ para corre el proyecto
 
 esto levantara el servidor de MySQL, ejecutando el scrip en donde pasa el exel al la Base de Datos covi 
 
+ademas de leventar la api en el pueto 80
+
 
 ## Consultas del SQL
 secreo el procedure donde enlista los registros y filtros de estos para eso usamos el precedure `consulta` en donde le pasaremos los siguintes datos  
