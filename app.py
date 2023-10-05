@@ -131,6 +131,43 @@ def crear_consuta():
         conn.close()
     
 
+# Ruta para obtener datos de la tabla Entidades_Residencia
+@app.route('/residencia', methods=['GET'])
+def obtener_entidades_residencia():
+    conexion = Conexion()
+    conn = conexion.conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Entidades_Residencia")
+    entidades = cursor.fetchall()
+    cursor.close()
+    return jsonify(entidades)
+
+# Ruta para obtener datos de la tabla Resultados
+@app.route('/resultados', methods=['GET'])
+def obtener_resultados():
+    conexion = Conexion()
+    conn = conexion.conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Resultados")
+    resultados = cursor.fetchall()
+    cursor.close()
+    return jsonify(resultados)
+
+# Ruta para obtener datos de la tabla Tipo_Paciente
+@app.route('/paciente', methods=['GET'])
+def obtener_tipo_paciente():
+    conexion = Conexion()
+    conn = conexion.conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Tipo_Paciente")
+    tipo_paciente = cursor.fetchall()
+    cursor.close()
+    return jsonify(tipo_paciente)
+
+
 
 @app.before_request
 def inicializar_aplicacion():

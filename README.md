@@ -43,3 +43,32 @@ http://localhost:5000/consulta
 }
 
 ```
+
+Para crear un nuevo registro usamos el metodo `POST` http://localhost:5000/consulta/crear, el cual nus permite crear un nuevo registro
+`POST`
+````sh
+http://localhost:5000/consulta/crear
+
+{
+    "id_registro": "Valor1",
+    "id_entidad": 1,
+    "sexo": "M",
+    "edad": 30,
+    "tipo_paciente": 1,
+    "intubado": 0,
+    "otro_caso": 0,
+    "id_resultado": 1
+}
+````
+
+delmismo modo tenemos `/residencia`,`/resultados`,`/paciente`
+que nos regresa los catalogos
+
+`GET`
+```sh
+http://localhost:5000/residencia
+
+http://localhost:5000/resultados
+
+http://localhost:5000/paciente
+```
