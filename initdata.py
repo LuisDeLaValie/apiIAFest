@@ -93,7 +93,23 @@ def crear_procedures():
                 AND (entidad_parametro = 'Todas' or entidad_parametro = er.NOMBRE_ENTIDAD); 
         END
         """    
-
+    consulta_crear="""
+        CREATE PROCEDURE InsertarPaciente(
+            IN p_ID_REGISTRO VARCHAR(255),
+            IN p_ID_ENTIDAD INT,
+            IN p_SEXO CHAR(1),
+            IN p_EDAD INT,
+            IN p_ID_TIPO_PACIENTE INT,
+            IN p_INTUBADO TINYINT(1),
+            IN p_OTRO_CASO TINYINT(1),
+            IN p_ID_RESULTADO INT
+        )
+        BEGIN
+            INSERT INTO Covid.Pacientes
+            (ID_REGISTRO, ID_ENTIDAD, SEXO, EDAD, ID_TIPO_PACIENTE, INTUBADO, OTRO_CASO, ID_RESULTADO)
+            VALUES (p_ID_REGISTRO, p_ID_ENTIDAD, p_SEXO, p_EDAD, p_ID_TIPO_PACIENTE, p_INTUBADO, p_OTRO_CASO, p_ID_RESULTADO);
+        END
+        """
 
     
     conexion =Conexion()
@@ -103,6 +119,7 @@ def crear_procedures():
     try:
 
         cursor.execute(consuta_procedure)
+        cursor.execute(consulta_crear)
         # Asegúrate de confirmar los cambios en la base de datos
         conn.commit()
 

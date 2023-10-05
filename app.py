@@ -33,6 +33,7 @@ def get_consutas():
 
 
         respuesta = {
+            "length":len(datos),
             "resultado": datos
         }
 
@@ -44,10 +45,6 @@ def get_consutas():
         cursor.close()
         conn.close()
     
-
-
-    
-
 
 @app.route('/consulta', methods=['POST'])
 def filtro_consultas():
@@ -79,6 +76,7 @@ def filtro_consultas():
 
 
         respuesta = {
+            "length":len(datos),
             "resultado": datos
         }
 
@@ -86,6 +84,48 @@ def filtro_consultas():
 
     except Exception as identifier:
         logging.warning(identifier)
+    finally:
+        cursor.close()
+        conn.close()
+    
+
+@app.route('/consulta/crear', methods=['POST'])
+def crear_consuta():
+    datos = request.json  # Obtener los datos en formato JSON del cuerpo de la solicitud
+    
+    id_registro = datos.get('id_registro')
+    id_entidad = int(datos.get('id_entidad'))  
+    sexo = datos.get('sexo')
+    edad = int(datos.get('edad')) 
+    tipo_paciente = int(datos.get('tipo_paciente')) 
+    intubado = int(datos.get('intubado'))
+    otro_caso = int(datos.get('otro_caso'))
+    id_resultado = int(datos.get('id_resultado'))
+
+
+    conexion = Conexion()
+    conn = conexion.conectar()
+    cursor = conn.cursor()
+
+    try:
+
+        # Ejecuta el procedimiento almacenado con un valor de entidad_id
+        cursor.callproc("Covid.InsertarPaciente", (id_registro, id_entidad, sexo, edad, tipo_paciente, intubado, otro_caso, id_resultado))
+        conn.commit()
+
+        respuesta = {
+            "resultado": "Creado"
+        }
+
+        return jsonify(respuesta)
+
+    except Exception as identifier:
+        logging.warning(identifier)
+        respuesta = {
+            "msg": f"{identifier}"
+        }
+
+        return jsonify(respuesta)
     finally:
         cursor.close()
         conn.close()
