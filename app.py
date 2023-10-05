@@ -18,29 +18,59 @@ def get_consutas():
     conn = conexion.conectar()
     cursor = conn.cursor()
 
+    id = request.args.get('id')
+
+    
+
     try:
-        # Ejecuta el procedimiento almacenado con un valor de entidad_id
-        cursor.callproc("Covid.consulta", (0, 'T', 'Todas'))
+        if id is not None and id != '':
+            logging.warning("<<<<<< paso 0")
+            # Ejecuta el procedimiento almacenado con un valor de entidad_id
+            cursor.callproc("Covid.ObtenerRegistroPorID", (id,))
+            logging.warning("<<<<<< paso 1")
 
-        resultados = cursor.stored_results()
+            resultados = cursor.stored_results()
+            logging.warning("<<<<<< paso 2")
+            # Procesa los resultados (si el procedimiento devuelve algún conjunto de resultados)
+            datos = []
+            for resultado in resultados:
+                for fila in resultado:
+                    datos.append(fila)
 
-        # Procesa los resultados (si el procedimiento devuelve algún conjunto de resultados)
-        datos = []
-        for resultado in resultados:
-            for fila in resultado:
-                datos.append(fila)
-        logging.warning("todo salio ok")
+            logging.warning("<<<<<< paso 3")
+            respuesta = {
+                "length":len(datos),
+                "resultado": datos
+            }
+
+            return jsonify(respuesta)
+        else:
+            # Ejecuta el procedimiento almacenado con un valor de entidad_id
+            cursor.callproc("Covid.consulta", (0, 'T', 'Todas'))
+
+            resultados = cursor.stored_results()
+
+            # Procesa los resultados (si el procedimiento devuelve algún conjunto de resultados)
+            datos = []
+            for resultado in resultados:
+                for fila in resultado:
+                    datos.append(fila)
 
 
+            respuesta = {
+                "length":len(datos),
+                "resultado": datos
+            }
+
+            return jsonify(respuesta)
+
+    except Exception as identifier:
+        logging.warning(f"<<<<<< Error al traer los datos {identifier}")
         respuesta = {
-            "length":len(datos),
-            "resultado": datos
+            "msg": f"{identifier}"
         }
 
         return jsonify(respuesta)
-
-    except Exception as identifier:
-        logging.warning(identifier)
     finally:
         cursor.close()
         conn.close()
@@ -84,6 +114,11 @@ def filtro_consultas():
 
     except Exception as identifier:
         logging.warning(identifier)
+        respuesta = {
+            "msg": f"{identifier}"
+        }
+
+        return jsonify(respuesta)
     finally:
         cursor.close()
         conn.close()

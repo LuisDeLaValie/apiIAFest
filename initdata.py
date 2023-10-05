@@ -110,7 +110,25 @@ def crear_procedures():
             VALUES (p_ID_REGISTRO, p_ID_ENTIDAD, p_SEXO, p_EDAD, p_ID_TIPO_PACIENTE, p_INTUBADO, p_OTRO_CASO, p_ID_RESULTADO);
         END
         """
-
+    conslusta_getune="""
+        CREATE PROCEDURE ObtenerRegistroPorID(IN p_ID_REGISTRO varchar(255))
+        BEGIN
+            SELECT 
+                p.ID_REGISTRO, 
+                er.NOMBRE_ENTIDAD, 
+                p.SEXO, 
+                p.EDAD, 
+                tp.TIPO, 
+                p.INTUBADO, 
+                p.OTRO_CASO, 
+                r.RESULTADO  
+            from Pacientes p 
+            inner join Entidades_Residencia er on er.ID_ENTIDAD = p.ID_ENTIDAD 
+            inner JOIN Tipo_Paciente tp on tp.ID_TIPO_PACIENTE  = p.ID_TIPO_PACIENTE 
+            inner join Resultados  r on r.ID_RESULTADO = p.ID_REGISTRO
+            WHERE p.ID_REGISTRO = p_ID_REGISTRO;
+        END
+        """
     
     conexion =Conexion()
     conn = conexion.conectar()
@@ -120,6 +138,7 @@ def crear_procedures():
 
         cursor.execute(consuta_procedure)
         cursor.execute(consulta_crear)
+        cursor.execute(conslusta_getune)
         # Asegúrate de confirmar los cambios en la base de datos
         conn.commit()
 
